@@ -19,6 +19,11 @@ class webservice extends ws_xmws {
         global $zdbh;
         $response_xml = "\n";
         $alldomains = module_controller::ListDomains();
+		
+		if($this->outputJson){			
+			$this->sendJSON($alldomains);
+		}
+
         foreach ($alldomains as $domain) {
             $response_xml = $response_xml . ws_xmws::NewXMLContentSection('domain', array(
                         'id' => $domain['id'],
@@ -43,6 +48,13 @@ class webservice extends ws_xmws {
         global $zdbh;
         $request_data = $this->RawXMWSToArray($this->wsdata);
         $response_xml = "\n";
+
+		if($this->outputJson){			
+	        $alldomains = module_controller::ListDomains($this->data['content']);
+			$this->sendJSON($alldomains);
+		}
+
+
         $alldomains = module_controller::ListDomains($request_data['content']);
         if (!fs_director::CheckForEmptyValue($alldomains)) {
             foreach ($alldomains as $domain) {

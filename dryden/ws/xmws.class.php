@@ -35,7 +35,12 @@ class ws_xmws {
     /**
      * @var string usada para almacenar el json_decode si existe...
      */
-    var $datos;
+    var $datos=false;
+
+    /**
+     * @var bool used for set output to json
+     */
+    var $outputJson = false;
 
     /**
      * Constructs the object setting the web service request data to a class variable.
@@ -46,15 +51,85 @@ class ws_xmws {
         $this->wsdataarray = $this->RawXMWSToArray($this->wsdata);
         $this->currentmodule = new module_controller;
         
+	    /**
+	     * Create a data exchange via json on a private property if on the xml request the content child have a json string.
+	     * This for is for not change the current api, only a alternative way.
+	     * @author Herduin Rivera (hrivera@exus.co)
+	     *
+	     *
+	     * Sample request for get all domains
+	     
+			<?xml version="1.0" encoding="UTF-8"?> 
+			<xmws> 
+				<apikey></apikey> 
+				<request>GetAllDomains</request> 
+				<authuser>user</authuser> 
+				<authpass>pass</authpass> 
+				<json>true</json>
+				<content></content> 
+			</xmws> 
+
+	     */
         if(isset($this->wsdataarray['content'])){
         	$json_data = $this->wsdataarray['content'];
 	        $json_data = str_replace(array("<![CDATA[","]]>"), array("",""), $json_data);
 	        $json_data = @json_decode($json_data);
 	        if($json_data!=false){
+	        	$this->outputJson = true;
 		        $this->datos = $json_data;
 	        }	        
         }
+        if(isset($this->wsdataarray['json'])){
+        	$this->outputJson = true;	        
+        }
     }
+
+
+    /**
+     * Constructs the object setting the web service request data to a class variable.
+     * @author Herduin Rivera (hrivera@exus.co)
+     * @param mixed data for response on the buffer of php.
+     * @param mixed Status code to send on headers of request..
+     */
+    static function sendJSON($response,$statusHeader=200){
+		header('X-Powered-By: zPanel API by Exus.co');
+		header('Content-Type: application/json');
+		header('Status: '.$statusHeader	);
+		if(is_array($response)) {
+			@array_walk ($response, 'utf8_encode_array');
+		} else {
+			$response = utf8_encode($response);
+		}
+		ob_end_clean();
+		echo json_encode($response);
+		exit();
+	}
+	
+	/*
+	 * if you want to encode/decode arrays, use these recursive functions
+	 * and call them with array_walk for e.g.
+	 * array_walk ($array_unencoded, 'utf8_decode_array');
+     * @author Herduin Rivera (hrivera@exus.co)
+	*/
+	static function utf8_encode_array (&$array, $key) {
+	   if(is_array($array)) {
+	     @array_walk ($array, 'utf8_encode_array');
+	   } else {
+	     $array = utf8_encode($array);
+	   }
+	}
+	
+	
+	/*  */
+	static function utf8_decode_array (&$array, $key) {
+	   if(is_array($array)) {
+	     @array_walk ($array, 'utf8_decode_array');
+	   } else {
+	     $array = utf8_decode($array);
+	   }
+	}
+	
+	
 
     /**
      * Requests that the web service method requires that the user must be authenticated wth the server.
@@ -120,6 +195,7 @@ class ws_xmws {
         $return_dataobject->addItemValue('authuser', runtime_haystack::GetValueBetween($xml, '<authuser>', '</authuser>'));
         $return_dataobject->addItemValue('authpass', runtime_haystack::GetValueBetween($xml, '<authpass>', '</authpass>'));
         $return_dataobject->addItemValue('content', runtime_haystack::GetValueBetween($xml, '<content>', '</content>'));
+        $return_dataobject->addItemValue('json', runtime_haystack::GetValueBetween($xml, '<json>', '</json>'));
         return $return_dataobject->getDataObject();
     }
 
