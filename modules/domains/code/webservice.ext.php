@@ -28,7 +28,7 @@ class webservice extends ws_xmws {
     public function GetDomainsForUser() {
 		if($this->outputJson){
 	        $alldomains = module_controller::ListDomains($this->datos->user);
-			$this->sendJSON($this->datos);
+			$this->sendJSON($alldomains);
 		}
 		
         global $zdbh;
