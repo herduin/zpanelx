@@ -58,9 +58,9 @@ class module_controller extends ctrl_module
             $sql->execute();
             while ($rowmailboxes = $sql->fetch()) {
                 if ($rowmailboxes['mb_enabled_in'] == 1) {
-                    $status = '<img src="modules/' . $controller->GetControllerRequest('URL', 'module') . '/assets/up.gif" alt="Up"/>';
+                    $status = '<img src="modules/mailboxes/assets/up.gif" alt="Up"/>';
                 } else {
-                    $status = '<img src="modules/' . $controller->GetControllerRequest('URL', 'module') . '/assets/down.gif" alt="Down"/>';
+                    $status = '<img src="modules/mailboxes/assets/down.gif" alt="Down"/>';
                 }
                 $res[] = array('address' => $rowmailboxes['mb_address_vc'],
                     'created' => date(ctrl_options::GetSystemOption('zpanel_df'), $rowmailboxes['mb_created_ts']),
