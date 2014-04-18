@@ -33,6 +33,11 @@ class ws_xmws {
     var $authuserid;
 
     /**
+     * @var string usada para almacenar el json_decode si existe...
+     */
+    var $datos;
+
+    /**
      * Constructs the object setting the web service request data to a class variable.
      * @author Bobby Allen (ballen@bobbyallen.me)
      */
@@ -40,6 +45,15 @@ class ws_xmws {
         $this->wsdata = ws_generic::ProcessRawRequest();
         $this->wsdataarray = $this->RawXMWSToArray($this->wsdata);
         $this->currentmodule = new module_controller;
+        
+        if(isset($this->wsdataarray['content'])){
+        	$json_data = $this->wsdataarray['content'];
+	        $json_data = str_replace(array("<![CDATA[","]]>"), array("",""), $json_data);
+	        $json_data = @json_decode($json_data);
+	        if($json_data!=false){
+		        $this->datos = $json_data;
+	        }	        
+        }
     }
 
     /**
