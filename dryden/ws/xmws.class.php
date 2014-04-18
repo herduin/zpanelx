@@ -73,8 +73,8 @@ class ws_xmws {
         if(isset($this->wsdataarray['content'])){
         	$json_data = $this->wsdataarray['content'];
 	        $json_data = str_replace(array("<![CDATA[","]]>"), array("",""), $json_data);
-	        $json_data = @json_decode($json_data);
-	        if($json_data!=false){
+		    $json_data = json_decode($json_data);
+	        if($json_data!==false){
 	        	$this->outputJson = true;
 		        $this->datos = $json_data;
 	        }	        
@@ -86,12 +86,12 @@ class ws_xmws {
 
 
     /**
-     * Constructs the object setting the web service request data to a class variable.
+     * Send output directly in format json .
      * @author Herduin Rivera (hrivera@exus.co)
      * @param mixed data for response on the buffer of php.
      * @param mixed Status code to send on headers of request..
      */
-    static function sendJSON($response,$statusHeader=200){
+    function sendJSON($response,$statusHeader=200){
 		header('X-Powered-By: zPanel API by Exus.co');
 		header('Content-Type: application/json');
 		header('Status: '.$statusHeader	);
@@ -105,29 +105,6 @@ class ws_xmws {
 		exit();
 	}
 	
-	/*
-	 * if you want to encode/decode arrays, use these recursive functions
-	 * and call them with array_walk for e.g.
-	 * array_walk ($array_unencoded, 'utf8_decode_array');
-     * @author Herduin Rivera (hrivera@exus.co)
-	*/
-	static function utf8_encode_array (&$array, $key) {
-	   if(is_array($array)) {
-	     @array_walk ($array, 'utf8_encode_array');
-	   } else {
-	     $array = utf8_encode($array);
-	   }
-	}
-	
-	
-	/*  */
-	static function utf8_decode_array (&$array, $key) {
-	   if(is_array($array)) {
-	     @array_walk ($array, 'utf8_decode_array');
-	   } else {
-	     $array = utf8_decode($array);
-	   }
-	}
 	
 	
 
@@ -240,5 +217,28 @@ class ws_xmws {
     }
 
 }
+
+	/*
+	 * if you want to encode/decode arrays, use these recursive functions
+	 * and call them with array_walk for e.g.
+	 * array_walk ($array_unencoded, 'utf8_decode_array');
+     * @author Herduin Rivera (hrivera@exus.co)
+	*/
+	function utf8_encode_array (&$array, $key) {
+	   if(is_array($array)) {
+	     @array_walk ($array, 'utf8_encode_array');
+	   } else {
+	     $array = utf8_encode($array);
+	   }
+	}
+	
+	function utf8_decode_array (&$array, $key) {
+	   if(is_array($array)) {
+	     @array_walk ($array, 'utf8_decode_array');
+	   } else {
+	     $array = utf8_decode($array);
+	   }
+	}
+
 
 ?>

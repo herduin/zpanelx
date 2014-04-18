@@ -12,31 +12,12 @@ class webservice extends ws_xmws {
 
     /**
      * Get the full list of currently active domains on the server.
-     * @global type $zdbh
-     * @return type 
      */
     public function GetAllDomains() {
-        global $zdbh;
-        $response_xml = "\n";
         $alldomains = module_controller::ListDomains();
-		
 		if($this->outputJson){			
 			$this->sendJSON($alldomains);
 		}
-
-        foreach ($alldomains as $domain) {
-            $response_xml = $response_xml . ws_xmws::NewXMLContentSection('domain', array(
-                        'id' => $domain['id'],
-                        'uid' => $domain['uid'],
-                        'domain' => $domain['name'],
-                        'homedirectory' => $domain['directory'],
-                        'active' => $domain['active'],
-                    ));
-        }
-        $dataobject = new runtime_dataobject();
-        $dataobject->addItemValue('response', '');
-        $dataobject->addItemValue('content', $response_xml);
-        return $dataobject->getDataObject();
     }
 
     /**
@@ -45,15 +26,14 @@ class webservice extends ws_xmws {
      * @return type 
      */
     public function GetDomainsForUser() {
+		if($this->outputJson){
+	        $alldomains = module_controller::ListDomains($this->datos->user);
+			$this->sendJSON($this->datos);
+		}
+		
         global $zdbh;
         $request_data = $this->RawXMWSToArray($this->wsdata);
         $response_xml = "\n";
-
-		if($this->outputJson){			
-	        $alldomains = module_controller::ListDomains($this->data['content']);
-			$this->sendJSON($alldomains);
-		}
-
 
         $alldomains = module_controller::ListDomains($request_data['content']);
         if (!fs_director::CheckForEmptyValue($alldomains)) {
