@@ -8,6 +8,7 @@
 	    $this->sendJSON(array("Error"=>"Faltan datos para ejecutar la accion.","DataRequest"=>$this->datos),400);
 	}
 
+
 	$mailserver_db = ctrl_options::GetSystemOption('mailserver_db');
 	include('cnf/db.php');
 	$z_db_user = $user;
@@ -32,20 +33,34 @@
 		if(strlen($this->datos->password)<6){
 		    $this->sendJSON(array("Error"=>"La clave debe contener como minimo 6 caracteres.","DataRequest"=>$this->datos),400);
 		}
+	    runtime_hook::Execute('OnBeforeUpdateMailbox');
         $sql = $mail_db->prepare("UPDATE mailbox SET password=:password, modified=NOW() WHERE username=:mailbox");
         $password = '{PLAIN-MD5}' . md5($this->datos->password);
         $sql->bindParam(':password', $password);
 	    $sql->bindParam(':mailbox', $this->datos->mailbox);
         $sql->execute();
+	    runtime_hook::Execute('OnAfterUpdateMailbox');
 	}
 	
 	if(isset($this->datos->enable)) {
+		if($this->datos->enable==1){
+	        runtime_hook::Execute('OnBeforeEnableMailbox');
+		}else{
+	        runtime_hook::Execute('OnBeforeDisableMailbox');
+		}
 	    $sql = $mail_db->prepare("UPDATE mailbox SET active=:enabled, modified=NOW() WHERE username=:mailbox");
 	    $status = ($this->datos->enable==1)?1:0;
 	    $sql->bindParam(':enabled', $status);
 	    $sql->bindParam(':mailbox', $this->datos->mailbox);
 	    $sql->execute();
+		if($this->datos->enable==1){
+	        runtime_hook::Execute('OnAfterEnableMailbox');			
+		}else{
+	        runtime_hook::Execute('OnAfterDisableMailbox');
+		}
 	}
+
+
 
 $this->sendJSON(true);
 

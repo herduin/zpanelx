@@ -47,6 +47,13 @@ class webservice extends ws_xmws {
 	}
 	
 	
+	/**
+	* Eliminar un buzon de correo
+	*/
+	function delMailbox(){
+		require("api/delmailbox.php");
+	}
+	
     /**
      * Obtener la lista de dominios del usuario enviado en $this->datos->user por json.
      */
