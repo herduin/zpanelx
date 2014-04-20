@@ -1,5 +1,14 @@
 <?php
 
+
+/**
+* Verificamos si el acceso corresponde a un subdominio que se dirige al correo y lo llevamos hasta alli.
+*/
+if(strstr($_SERVER["SERVER_NAME"], "correo.")!=false || strstr($_SERVER["SERVER_NAME"], "webmail.")!=false){
+    exit(header("location: /webmail/"));
+}
+
+
 /**
  * The ZPanelX loader and default handler file.
  * @package zpanelx
