@@ -580,7 +580,7 @@ a.iconlink.upload {
 }
 
 #taskbar .button-logout {
-	display: none;
+	/*display: none;*/
 }
 
 #taskbar a.button-logout span.button-inner {
@@ -649,13 +649,13 @@ a.iconlink.upload {
 .minimal #topnav {
 	position: relative;
 	top: 4px;
-	height: 42px;
+	height: 46px;
 }
 
 .minimal #taskbar a {
 	position: relative;
 	padding: 10px 10px 0 6px;
-	height: 32px;
+	height: 36px;
 }
 
 .minimal #taskbar .button-logout {
@@ -805,7 +805,7 @@ a.iconlink.upload {
 
 #mainscreen {
 	position: absolute;
-	top: 88px;
+	top: 55px;
 	left: 10px;
 	right: 10px;
 	bottom: 20px;
