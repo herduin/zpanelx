@@ -15,9 +15,7 @@ class webservice extends ws_xmws {
      */
     public function GetAllDomains() {
         $alldomains = module_controller::ListDomains();
-		if($this->outputJson){			
-			$this->sendJSON($alldomains);
-		}
+		$this->sendJSON($alldomains);
     }
 
     /**
@@ -26,10 +24,8 @@ class webservice extends ws_xmws {
      * @return type 
      */
     public function GetDomainsForUser() {
-		if($this->outputJson){
-	        $alldomains = module_controller::ListDomains($this->datos->user);
-			$this->sendJSON($alldomains);
-		}
+        $alldomains = module_controller::ListDomains($this->datos->user);
+		$this->sendJSON($alldomains);
     }
 
     /**
@@ -37,15 +33,12 @@ class webservice extends ws_xmws {
      * @return type 
      */
     public function CreateDomain() {
-        $request_data = $this->RawXMWSToArray($this->wsdata);
-        $dataobject = new runtime_dataobject();
-        $dataobject->addItemValue('response', '');
-        if (module_controller::ExecuteAddDomain(ws_generic::GetTagValue('uid', $request_data['content']), ws_generic::GetTagValue('domain', $request_data['content']), ws_generic::GetTagValue('destination', $request_data['content']), ws_generic::GetTagValue('autohome', $request_data['content']))) {
-            $dataobject->addItemValue('content', ws_xmws::NewXMLTag('domain', ws_generic::GetTagValue('domain', $request_data['content'])) . ws_xmws::NewXMLTag('created', 'true'));
+        if (module_controller::ExecuteAddDomain($this->datos->uid,$this->datos->domain,$this->datos->destination,$this->datos->autohome)) {
+            $data = true;
         } else {
-            $dataobject->addItemValue('content', ws_xmws::NewXMLTag('domain', ws_generic::GetTagValue('domain', $request_data['content'])) . ws_xmws::NewXMLTag('created', 'false'));
+            $data = false;
         }
-        return $dataobject->getDataObject();
+        $this->sendJSON($data);
     }
 
     /**
@@ -53,17 +46,12 @@ class webservice extends ws_xmws {
      * @return type 
      */
     public function DeleteDomain() {
-        $request_data = $this->RawXMWSToArray($this->wsdata);
-        $contenttags = $this->XMLDataToArray($request_data['content']);
-        $dataobject = new runtime_dataobject();
-        $dataobject->addItemValue('response', '');
-
-        if (module_controller::ExecuteDeleteDomain($contenttags['domainid'])) {
-            $dataobject->addItemValue('content', ws_xmws::NewXMLTag('domainid', $contenttags['domainid']) . ws_xmws::NewXMLTag('deleted', 'true'));
+        if (module_controller::ExecuteDeleteDomainbyDomainName($this->datos->domain)) {
+            $data = true;
         } else {
-            $dataobject->addItemValue('content', ws_xmws::NewXMLTag('domainid', $contenttags['domainid']) . ws_xmws::NewXMLTag('deleted', 'false'));
+            $data = false;
         }
-        return $dataobject->getDataObject();
+        $this->sendJSON($data);
     }
 
 }

@@ -115,6 +115,23 @@ class module_controller extends ctrl_module
         return $retval;
     }
 
+    static function ExecuteDeleteDomainbyDomainName($domain)
+    {
+        global $zdbh;
+        runtime_hook::Execute('OnBeforeDeleteDomain');
+        $sql = $zdbh->prepare("UPDATE x_vhosts
+							   SET vh_deleted_ts=:time
+							   WHERE vh_name_vc=:domain");
+        $sql->bindParam(':domain', $domain);
+        $time = time();
+        $sql->bindParam(':time', $time);
+        $sql->execute();
+        self::SetWriteApacheConfigTrue();
+        $retval = TRUE;
+        runtime_hook::Execute('OnAfterDeleteDomain');
+        return $retval;
+    }
+
     static function ExecuteAddDomain($uid, $domain, $destination, $autohome)
     {
         global $zdbh;
